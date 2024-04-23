@@ -32,4 +32,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Push Docker image to Docker Hub
-        run: docker push yourdockerhubusername/yourimage:latest
+        run: docker push devsasitha/commerce-microservices-devops:latest
