@@ -1,0 +1,113 @@
+version: "3.3"
+
+services:
+
+  api:
+    build:
+      context: .
+    image: ecommerce-microservices-devops
+    env_file: docker-compose.env
+    environment:
+      SERVICES: api
+      PORT: 3000
+    depends_on:
+      - nats
+    labels:
+      - "traefik.enable=true"
+      - "traefik.log.level=DEBUG"
+      - "traefik.http.routers.api.rule=Host(``)"
+      - "traefik.http.services.api.loadbalancer.server.port=3000"
+      - "traefik.http.routers.api.middlewares=cors"
+      - "traefik.http.middlewares.cors.headers.accesscontrolalloworigin=*"
+      - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,PUT,POST,DELETE"
+      - "traefik.http.middlewares.cors.headers.accesscontrolmaxage=1000"
+      - "traefik.http.middlewares.cors.headers.accesscontrolallowheaders=Origin,Accept,Content-Type,Authorization"
+      # - "traefik.http.routers.api.tls=true"
+      # - "traefik.http.routers.api.tls.certresolver=myresolver"
+    networks:
+      - internal
+
+  categories:
+    build:
+      context: .
+    image: ecommerce-microservices-devops
+    env_file: docker-compose.env
+    environment:
+      SERVICES: categories
+    depends_on:
+      - nats
+    networks:
+      - internal
+
+  orders:
+    build:
+      context: .
+    image: ecommerce-microservices-devops
+    env_file: docker-compose.env
+    environment:
+      SERVICES: orders
+    depends_on:
+      - mongo
+      - nats
+    networks:
+      - internal
+
+  products:
+    build:
+      context: .
+    image: ecommerce-microservices-devops
+    env_file: docker-compose.env
+    environment:
+      SERVICES: products
+    depends_on:
+      - mongo
+      - nats
+    networks:
+      - internal
+
+  users:
+    build:
+      context: .
+    image: ecommerce-microservices-devops
+    env_file: docker-compose.env
+    environment:
+      SERVICES: users
+    depends_on:
+      - mongo
+      - nats
+    networks:
+      - internal
+  
+  mongo:
+    image: mongo:4
+    volumes:
+      - data:/data/db
+    networks:
+      - internal
+
+  nats:
+    image: nats:2
+    networks:
+      - internal
+
+  traefik:
+    image: traefik:v2.4
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+    ports:
+      - 3000:80
+      - 3001:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - internal
+      - default
+
+networks:
+  internal:
+
+volumes:
+  data:
