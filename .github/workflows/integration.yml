@@ -37,7 +37,6 @@ jobs:
       - name: Push Docker image to Docker Hub
         run: docker push devsasitha/commerce-microservices-devops:latest
 
-
       - uses: azure/login@v1
         with:
            client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -46,7 +45,5 @@ jobs:
       
       - uses: azure/aks-set-context@v3
         with:
-           resource-group: ecommerce-microservices-devops
-           cluster-name: nodedeploy
-           admin: false
-           use-kubelogin: true
+           resource-group: 'ecommerce-microservices-devops'
+           cluster-name: 'nodedeploy'
