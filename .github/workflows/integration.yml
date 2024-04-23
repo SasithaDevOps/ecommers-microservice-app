@@ -46,7 +46,7 @@ jobs:
       
       - uses: azure/aks-set-context@v3
         with:
-           resource-group: 'ecommerce-microservices-devops'
-           cluster-name: 'nodedeploy'
-           admin: 'false'
-           use-kubelogin: 'true'
+           resource-group: ecommerce-microservices-devops
+           cluster-name: nodedeploy
+           admin: false
+           use-kubelogin: true
